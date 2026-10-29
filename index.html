@@ -1,1 +1,312 @@
-My all-in-one social media management app
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Social Hub</title>
+<style>
+:root {
+  --bg: #0d0f14;
+  --panel: #171a23;
+  --muted: #969bad;
+  --text: #f4f5fb;
+  --accent: #a78bfa;
+  --border: #292d3a;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+button { font: inherit; cursor: pointer; }
+.app { display: flex; min-height: 100vh; }
+.sidebar {
+  width: 220px;
+  padding: 25px 15px;
+  border-right: 1px solid var(--border);
+  background: #11131a;
+}
+.logo {
+  font-size: 22px;
+  font-weight: 800;
+  margin: 5px 10px 35px;
+}
+.logo span { color: var(--accent); }
+.nav {
+  display: block;
+  width: 100%;
+  padding: 13px;
+  margin: 5px 0;
+  border: 0;
+  border-radius: 10px;
+  text-align: left;
+  color: var(--muted);
+  background: transparent;
+}
+.nav.active, .nav:hover {
+  background: #29243b;
+  color: white;
+}
+.main { flex: 1; min-width: 0; padding: 28px; }
+.top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+h1 { font-size: 28px; margin: 0 0 7px; }
+p { color: var(--muted); }
+.status { color: #a7f3d0; font-size: 13px; }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 15px;
+  margin: 25px 0;
+}
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  padding: 20px;
+  min-width: 0;
+}
+.metric {
+  font-size: 30px;
+  font-weight: 750;
+  margin-top: 12px;
+}
+.label { color: var(--muted); font-size: 14px; }
+.columns {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 16px;
+}
+h2 { font-size: 18px; margin: 0 0 18px; }
+.item {
+  padding: 13px 0;
+  border-bottom: 1px solid var(--border);
+}
+.item:last-child { border-bottom: 0; }
+.small { font-size: 13px; color: var(--muted); margin-top: 5px; }
+.pill {
+  display: inline-block;
+  padding: 5px 9px;
+  border-radius: 20px;
+  background: #29243b;
+  color: #d8ccff;
+  font-size: 12px;
+}
+.action {
+  background: var(--accent);
+  color: #171122;
+  border: 0;
+  border-radius: 9px;
+  padding: 9px 12px;
+  font-weight: 700;
+}
+.secondary { background: #292d3a; color: white; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.empty { color: var(--muted); font-size: 14px; }
+.notice {
+  color: #c4b5fd;
+  font-size: 13px;
+  margin-top: 14px;
+}
+@media(max-width:750px) {
+  .sidebar { width: 76px; padding: 18px 8px; }
+  .logo { font-size: 20px; text-align: center; margin: 8px 0 25px; }
+  .logo .word, .nav .word { display: none; }
+  .nav { text-align: center; padding: 13px 5px; font-size: 19px; }
+  .main { padding: 18px 12px; }
+  .grid { grid-template-columns: 1fr; gap: 10px; }
+  .columns { grid-template-columns: 1fr; }
+  h1 { font-size: 24px; }
+  .card { padding: 16px; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo">S<span>H</span><span class="word"> Social Hub</span></div>
+    <button class="nav active" data-page="Dashboard">🏠 <span class="word">Dashboard</span></button>
+    <button class="nav" data-page="Messages">💬 <span class="word">Messages</span></button>
+    <button class="nav" data-page="Requests">👥 <span class="word">Requests</span></button>
+    <button class="nav" data-page="Posts">📝 <span class="word">Posts</span></button>
+    <button class="nav" data-page="Insights">📊 <span class="word">Insights</span></button>
+  </aside>
+
+  <main class="main">
+    <div class="top">
+      <div>
+        <h1 id="heading">Dashboard</h1>
+        <p>One place for your social world.</p>
+      </div>
+      <span class="status">● Demo mode</span>
+    </div>
+
+    <div class="grid">
+      <section class="card">
+        <div class="label">Connected accounts</div>
+        <div class="metric">0</div>
+        <div class="small">Real accounts connected</div>
+      </section>
+      <section class="card">
+        <div class="label">Demo messages</div>
+        <div class="metric" id="messageCount">3</div>
+        <div class="small">Sample conversations</div>
+      </section>
+      <section class="card">
+        <div class="label">Demo requests</div>
+        <div class="metric" id="requestCount">2</div>
+        <div class="small">Sample follow requests</div>
+      </section>
+    </div>
+
+    <div class="columns">
+      <section class="card">
+        <h2 id="listHeading">Recent messages</h2>
+        <div id="contentList"></div>
+      </section>
+      <section class="card">
+        <h2>Quick actions</h2>
+        <p>Explore your dashboard.</p>
+        <div class="actions">
+          <button class="action" onclick="showPage('Messages')">View messages</button>
+          <button class="action secondary" onclick="showPage('Requests')">View requests</button>
+          <button class="action secondary" onclick="showPage('Insights')">View insights</button>
+        </div>
+        <div class="notice">
+          This is a demo. No Instagram account is connected.
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<script>
+const messages = [
+  {name:"Alex", text:"Hey! How are you?", time:"10 min ago"},
+  {name:"Sam", text:"Are we meeting today?", time:"30 min ago"},
+  {name:"Jamie", text:"Check out this photo!", time:"1 hour ago"}
+];
+
+let requests = [
+  {name:"Taylor", type:"Follow request"},
+  {name:"Jordan", type:"Follow request"}
+];
+
+function showPage(page) {
+  document.getElementById("heading").textContent = page;
+
+  document.querySelectorAll(".nav").forEach(button => {
+    button.classList.toggle("active", button.dataset.page === page);
+  });
+
+  const title = document.getElementById("listHeading");
+  const list = document.getElementById("contentList");
+  list.innerHTML = "";
+
+  if (page === "Dashboard" || page === "Messages") {
+    title.textContent = page === "Messages"
+      ? "All messages" : "Recent messages";
+
+    if (messages.length === 0) {
+      list.innerHTML = '<p class="empty">No demo messages left.</p>';
+    }
+
+    messages.forEach(message => {
+      const item = document.createElement("div");
+      item.className = "item";
+
+      const name = document.createElement("strong");
+      name.textContent = message.name;
+
+      const text = document.createElement("div");
+      text.className = "small";
+      text.textContent = message.text + " · " + message.time;
+
+      item.append(name, text);
+      list.appendChild(item);
+    });
+
+  } else if (page === "Requests") {
+    title.textContent = "Follow requests";
+
+    if (requests.length === 0) {
+      list.innerHTML = '<p class="empty">No demo requests remaining.</p>';
+    }
+
+    requests.forEach((request, index) => {
+      const item = document.createElement("div");
+      item.className = "item";
+
+      const name = document.createElement("strong");
+      name.textContent = request.name;
+
+      const type = document.createElement("div");
+      type.className = "small";
+      type.textContent = request.type;
+
+      const actions = document.createElement("div");
+      actions.className = "actions";
+
+      const accept = document.createElement("button");
+      accept.className = "action";
+      accept.textContent = "Accept demo";
+
+      accept.onclick = () => {
+        requests.splice(index, 1);
+        updateCounts();
+        showPage("Requests");
+      };
+
+      const dismiss = document.createElement("button");
+      dismiss.className = "action secondary";
+      dismiss.textContent = "Dismiss demo";
+
+      dismiss.onclick = () => {
+        requests.splice(index, 1);
+        updateCounts();
+        showPage("Requests");
+      };
+
+      actions.append(accept, dismiss);
+      item.append(name, type, actions);
+      list.appendChild(item);
+    });
+
+  } else if (page === "Posts") {
+    title.textContent = "Posts";
+    list.innerHTML = `
+      <p>Post scheduling will be built in a future step.</p>
+      <span class="pill">Demo preview</span>
+    `;
+
+  } else if (page === "Insights") {
+    title.textContent = "Insights";
+    list.innerHTML = `
+      <div class="item"><strong>Messages</strong><p>3 sample conversations</p></div>
+      <div class="item"><strong>Requests</strong><p>${requests.length} sample requests remaining</p></div>
+      <p class="empty">Real social media analytics are not connected.</p>
+    `;
+  }
+}
+
+function updateCounts() {
+  document.getElementById("messageCount").textContent = messages.length;
+  document.getElementById("requestCount").textContent = requests.length;
+}
+
+document.querySelectorAll(".nav").forEach(button => {
+  button.addEventListener("click", () => showPage(button.dataset.page));
+});
+
+showPage("Dashboard");
+</script>
+</body>
+</html>
